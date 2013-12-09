@@ -7,6 +7,6 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '0.1.0'
 
 
-%w{ apt git build-essential openssl rbenv }.each do |dep|
+%w{ apt git build-essential sudo openssl rbenv }.each do |dep|
   depends dep
 end
