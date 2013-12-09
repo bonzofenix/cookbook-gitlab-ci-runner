@@ -10,6 +10,13 @@ execute "sudo adduser --disabled-login --gecos 'GitLab CI Runner' gitlab_ci_runn
   not_if 'id -u gitlab_ci_runner'
 end
 
+git node['gitlab_ci_runner']['app_home'] do
+  repository node['gitlab_ci_runner']['git']['url']
+  reference node['gitlab_ci_runner']['git']['branch']
+  action :checkout
+  user 'gitlab_ci_runner'
+end
+
 ENV['CI_SERVER_URL'] = node['gitlab_ci_runner']['gitlab_ci_url']
 ENV['REGISTRATION_TOKEN'] = node['gitlab_ci_runner']['gitlab_ci_token']
 
