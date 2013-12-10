@@ -77,6 +77,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.json = {
+      'authorization'=> {'sudo' => { 'users' => ['gitlab_ci_runner', 'vagrant'],
+                                     'passwordless' => true} },
+                                      "apt" => {"compiletime" => true} ,
       :gitlab_ci_runner => {
         :gitlab_ci_url => 'http://http://ec2-184-72-91-134.compute-1.amazonaws.com:9292',
         :gitlab_ci_token => '672ed80b57574b5b051a',
