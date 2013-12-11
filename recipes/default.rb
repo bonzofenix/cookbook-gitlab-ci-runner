@@ -20,6 +20,8 @@ end
 ENV['CI_SERVER_URL'] = node['gitlab_ci_runner']['gitlab_ci_url']
 ENV['REGISTRATION_TOKEN'] = node['gitlab_ci_runner']['gitlab_ci_token']
 
+execute "sudo apt-get -y install libicu-dev"
+
 bash 'setup_runner' do
   cwd node['gitlab_ci_runner']['app_home']
   code <<-EOH
@@ -32,7 +34,6 @@ bash 'setup_runner' do
   user 'gitlab_ci_runner'
 end
 
-execute "sudo apt-get -y install libicu-dev"
 
 bash 'setup_gitlab_ci_daemon' do
   cwd node['gitlab_ci_runner']['app_home']
