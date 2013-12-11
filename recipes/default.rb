@@ -23,13 +23,16 @@ ENV['REGISTRATION_TOKEN'] = node['gitlab_ci_runner']['gitlab_ci_token']
 bash 'setup_runner' do
   cwd node['gitlab_ci_runner']['app_home']
   code <<-EOH
-          sudo -u gitlab_ci_runner -H bundle install
+          sudo bundle install
           sudo rbenv rehash
-          bundle exec ./bin/setup
+          cd #{ node['gitlab_ci_runner']['app_home']}
+          sudo CI_SERVER_URL=#{node['gitlab_ci_runner']['gitlab_ci_url']} REGISTRATION_TOKEN=#{node['gitlab_ci_runner']['gitlab_ci_token']} bundle exec ./bin/setup
+
          EOH
-   user 'gitlab_ci_runner'
+  user 'gitlab_ci_runner'
 end
 
+execute "sudo apt-get -y install libicu-dev"
 
 bash 'setup_gitlab_ci_daemon' do
   cwd node['gitlab_ci_runner']['app_home']

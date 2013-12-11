@@ -18,8 +18,6 @@ Vagrant.configure("2") do |config|
   # Assign this VM to a host-only network IP, allowing you to access it
   # via the IP. Host-only networks can talk to the host machine as well as
   # any other machines on the same network, but cannot be accessed (through this
-  # network interface) by any external networks.
-  config.vm.network :private_network, ip: "33.33.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -37,26 +35,9 @@ Vagrant.configure("2") do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider :virtualbox do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-  #   # Use VBoxManage to customize the VM. For example to change memory:
-  #   vb.customize ["modifyvm", :id, "--memory", "1024"]
-  # end
-  #
-  # View the documentation for the provider you're using for more
-  # information on available options.
-  #
-  config.vm.provider :virtualbox do |vb|
-    # Use VBoxManage to customize the VM. For example to change memory:
-    vb.customize ["modifyvm", :id, "--memory", "1024"]
-  end
 
+  config.ssh.max_tries = 40
+  config.ssh.timeout   = 120
 
   config.omnibus.chef_version = :latest
 
@@ -77,13 +58,13 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :chef_solo do |chef|
     chef.json = {
+      :gitlab_ci_runner => {
+        :gitlab_ci_url => 'http://ec2-184-72-91-134.compute-1.amazonaws.com:9292',
+        :gitlab_ci_token => '672ed80b57574b5b051a',
+      },
       'authorization'=> {'sudo' => { 'users' => ['gitlab_ci_runner', 'vagrant'],
                                      'passwordless' => true} },
                                       "apt" => {"compiletime" => true} ,
-      :gitlab_ci_runner => {
-        :gitlab_ci_url => 'http://http://ec2-184-72-91-134.compute-1.amazonaws.com:9292',
-        :gitlab_ci_token => '672ed80b57574b5b051a',
-      }
     }
 
     chef.run_list = [
