@@ -45,5 +45,8 @@ bash 'setup_gitlab_ci_daemon' do
    user 'gitlab_ci_runner'
 end
 
+log "add the following keys to the known_host file on your gitlab installation:"
+log `cat ~/.ssh/`
+
 execute 'sudo service gitlab-ci-runner start'
 
