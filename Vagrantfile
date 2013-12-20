@@ -62,7 +62,7 @@ Vagrant.configure("2") do |config|
         :gitlab_ci_url => 'http://ec2-184-72-91-134.compute-1.amazonaws.com:9292',
         :gitlab_ci_token => '672ed80b57574b5b051a',
       },
-      'authorization'=> {'sudo' => { 'users' => ['gitlab_ci_runner', 'vagrant'],
+      'authorization'=> {'sudo' => { 'users' => ['ubuntu', 'gitlab_ci_runner', 'vagrant'],
                                      'passwordless' => true} },
                                       "apt" => {"compiletime" => true} ,
     }
