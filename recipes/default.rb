@@ -1,7 +1,7 @@
+
 rbenv_ruby node['gitlab_ci_runner']['ruby']['version'] do
   global true
 end
-
 rbenv_gem 'bundler' do
   ruby_version node['gitlab_ci_runner']['ruby']['version']
 end
@@ -25,15 +25,14 @@ execute "sudo apt-get -y install libicu-dev"
 
 bash 'setup_runner' do
   cwd node['gitlab_ci_runner']['app_home']
+  user 'gitlab_ci_runner'
   code <<-EOH
           sudo bundle install
           sudo rbenv rehash
           cd #{ node['gitlab_ci_runner']['app_home']}
-          sudo CI_SERVER_URL=#{node['gitlab_ci_runner']['gitlab_ci_url']} REGISTRATION_TOKEN=#{node['gitlab_ci_runner']['gitlab_ci_token']} bundle exec ./bin/setup
+          sudo -u gitlab_ci_runner -H CI_SERVER_URL=#{node['gitlab_ci_runner']['gitlab_ci_url']} REGISTRATION_TOKEN=#{node['gitlab_ci_runner']['gitlab_ci_token']} bundle exec ./bin/setup
          EOH
-  user 'gitlab_ci_runner'
 end
-
 
 bash 'setup_gitlab_ci_daemon' do
   cwd node['gitlab_ci_runner']['app_home']
@@ -45,17 +44,14 @@ bash 'setup_gitlab_ci_daemon' do
    user 'gitlab_ci_runner'
 end
 
+bash 'add_keys' do
+  cwd node['gitlab_ci_runner']['home']
+  code <<-EOH
+    mkdir #{node['gitlab_ci_runner']['home']}/.ssh
+    ssh-keyscan -H #{node['gitlab_ci_runner']['gitlab_host']} >> #{node['gitlab_ci_runner']['home']}/.ssh/known_hosts
+  EOH
+
+  user 'gitlab_ci_runner'
+end
+
 execute 'sudo service gitlab-ci-runner start'
-
-# bash 'add_keys' do
-  # cwd node['gitlab_ci_runner']['app_home']
-  # code <<-EOH
-  # sudo mkdir /home/gitlab_ci_runnner/.ssh/
-  # sudo touch /home/gitlab_ci_runnner/.ssh/known_hosts
-  # sudo ssh-keyscan -H #{node['gitlab_ci_runner']['gitlab_host']} >> /home/gitlab_ci_runnner/.ssh/known_hosts
-         # EOH
-
-  # user 'gitlab_ci_runner'
-# end
-
-
